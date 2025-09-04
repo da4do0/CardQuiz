@@ -106,3 +106,34 @@ export interface QuizFilters {
   difficulty?: QuizDifficulty;
   searchTerm?: string;
 }
+
+// Quiz Lobby types
+export interface LobbyParticipant {
+  id: number;
+  username: string;
+  joinedAt: Date;
+}
+
+export interface QuizLobby {
+  id: string;
+  quizId: number;
+  quiz: Quiz;
+  participants: LobbyParticipant[];
+  adminId: number;
+  isActive: boolean;
+  maxParticipants?: number;
+  createdAt: Date;
+  startedAt?: Date;
+}
+
+export interface LobbyJoinResponse {
+  success: boolean;
+  message: string;
+  lobby?: QuizLobby;
+}
+
+export interface LobbyStartResponse {
+  success: boolean;
+  message: string;
+  gameSessionId?: string;
+}

@@ -7,6 +7,7 @@ from routes.quiz_routes import quiz_bp
 # Configura CORS (completamente libero)
 CORS(app)
 
+
 # Registra i blueprints
 app.register_blueprint(user_bp)
 app.register_blueprint(quiz_bp)
@@ -25,6 +26,10 @@ def home():
         <li><strong>POST</strong> /api/auth - Login</li>
         <li><strong>POST</strong> /api/quiz - Crea quiz</li>
         <li><strong>GET</strong> /api/quiz/&lt;id&gt; - Ottieni quiz</li>
+        <li><strong>GET</strong> /api/quiz/&lt;id&gt;/lobby - Ottieni lobby info</li>
+        <li><strong>POST</strong> /api/quiz/&lt;id&gt;/lobby/join - Unisciti alla lobby</li>
+        <li><strong>POST</strong> /api/quiz/&lt;id&gt;/lobby/start - Inizia quiz (solo admin)</li>
+        <li><strong>POST</strong> /api/quiz/&lt;id&gt;/lobby/leave - Lascia lobby</li>
     </ul>
     
     <h3>Test veloce:</h3>

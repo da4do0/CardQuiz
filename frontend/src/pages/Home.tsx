@@ -16,44 +16,8 @@ const Home: React.FC = () => {
     navigate('/my-quizzes');
   };
 
-  // Mock data for featured quizzes
-  const [featuredQuizzes] = useState<Quiz[]>([
-    {
-      id: 1,
-      nome: "General Knowledge Challenge",
-      user_id: 1,
-      data: new Date(),
-      category: "General Knowledge",
-      questions: [],
-      timeLimit: 300,
-    },
-    {
-      id: 2,
-      nome: "Science Fundamentals",
-      user_id: 1,
-      data: new Date(),
-      category: "Science",
-      questions: [],
-      timeLimit: 600,
-    },
-    {
-      id: 3,
-      nome: "World History Quiz",
-      user_id: 1,
-      data: new Date(),
-      category: "History",
-      questions: [],
-      timeLimit: 450,
-    },
-  ]);
-
   const startQuiz = (quizId: number) => {
     navigate(`/quiz/${quizId}`);
-  };
-
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    return `${mins} min${mins !== 1 ? "s" : ""}`;
   };
 
   const getUserInfo = async (userId: number) => {
@@ -86,12 +50,6 @@ const Home: React.FC = () => {
               <h1 className="text-2xl font-bold text-white">CardQuiz</h1>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <Link
-                to="/"
-                className="text-white hover:text-purple-200 transition-colors"
-              >
-                Home
-              </Link>
               <Link
                 to="/create-quiz"
                 className="text-white hover:text-purple-200 transition-colors"
@@ -191,41 +149,7 @@ const Home: React.FC = () => {
             </div>
           </div>
         </div>
-        
-        {/* Testing Section - Remove in production */}
-        <div className="mt-12 bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-yellow-200 mb-4">🧪 Testing - Quick Login</h3>
-          <p className="text-yellow-100/80 mb-4">For testing the MyQuizzes page:</p>
-          <div className="flex gap-4">
-            <button 
-              onClick={() => simulateLogin(1)} 
-              className="btn-primary"
-            >
-              Login as User 1 (admin)
-            </button>
-            <button 
-              onClick={() => simulateLogin(2)} 
-              className="btn-secondary"
-            >
-              Login as User 2 (admin1)
-            </button>
-          </div>
-          {userId && (
-            <p className="text-yellow-100 mt-4">
-              Currently logged in as User ID: {userId} ({username})
-            </p>
-          )}
-        </div>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-black/20 mt-20 border-t border-white/20 absolute bottom-0 w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-white/60">
-            <p>&copy; 2025 CardQuiz. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

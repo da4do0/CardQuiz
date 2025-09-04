@@ -27,7 +27,6 @@ const MyQuizzes: React.FC = () => {
       setIsLoading(true);
       setError("");
 
-      // Call the real API to get user's quizzes
       const response = await quizApi.getQuizzesByUser(userId);
       console.log("Fetched quizzes:", response);
       const userQuizzes = response.quizzes.map((quiz: any) => ({
@@ -210,18 +209,24 @@ const MyQuizzes: React.FC = () => {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex space-x-3">
+                    <div className="flex space-x-2">
                       <Link
                         to={`/quiz/${quiz.id}`}
-                        className="btn-primary flex-1 text-center text-sm"
+                        className="btn-secondary flex-1 text-center text-xs"
                       >
-                        🎮 Play Quiz
+                        🎮 Solo
+                      </Link>
+                      <Link
+                        to={`/quiz/${quiz.id}/lobby`}
+                        className="btn-primary flex-1 text-center text-xs"
+                      >
+                        👥 Lobby
                       </Link>
                       <Link
                         to={`/quiz/${quiz.id}/results`}
-                        className="btn-secondary flex-1 text-center text-sm"
+                        className="btn-secondary flex-1 text-center text-xs"
                       >
-                        📊 View Results
+                        📊 Results
                       </Link>
                     </div>
                   </div>

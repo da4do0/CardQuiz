@@ -7,7 +7,10 @@ import type {
   QuizSession,
   QuizResult,
   UserInfoResponse,
-  CreateQuizResponse
+  CreateQuizResponse,
+  QuizLobby,
+  LobbyJoinResponse,
+  LobbyStartResponse
 } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -279,6 +282,27 @@ export const handleApiError = (error: unknown): string => {
   }
   
   return 'An unexpected error occurred.';
+};
+
+// Quiz Lobby API calls
+export const lobbyApi = {
+  getLobby: async (quizId: string): Promise<QuizLobby> => {
+    return apiRequest(`/quiz/${quizId}/lobby`);
+  },
+
+  joinLobby: async (quizId: string, userId: number): Promise<LobbyJoinResponse> => {
+    return apiRequest(`/quiz/${quizId}/lobby/join`, {
+      method: 'POST',
+      body: JSON.stringify({ userId }),
+    });
+  },
+
+  startQuiz: async (quizId: string, userId: number): Promise<LobbyStartResponse> => {
+    return apiRequest(`/quiz/${quizId}/lobby/start`, {
+      method: 'POST',
+      body: JSON.stringify({ userId }),
+    });
+  },
 };
 
 export const tokenManager = {
