@@ -8,6 +8,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const { userId } = useAuth();
   const [username, setUsername] = useState<string>("");
+  const [room, setRoom] = useState<string>("");
 
   // Mock data for featured quizzes
   const [featuredQuizzes] = useState<Quiz[]>([
@@ -135,111 +136,63 @@ const Home: React.FC = () => {
             Discover amazing quizzes, test your knowledge, and compete with
             friends. Create custom quizzes or choose from our extensive library.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/create-quiz" className="btn-primary text-lg px-8 py-4">
-              Create Your Quiz
-            </Link>
-            <button
-              onClick={() => startQuiz(featuredQuizzes[0]?.id)}
-              className="btn-secondary text-lg px-8 py-4"
-            >
-              Take a Quick Quiz
-            </button>
-          </div>
-        </div>
-
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          <div className="card text-center">
-            <div className="text-3xl font-bold text-white mb-2">1,000+</div>
-            <div className="text-white/80">Quizzes Available</div>
-          </div>
-          <div className="card text-center">
-            <div className="text-3xl font-bold text-white mb-2">50,000+</div>
-            <div className="text-white/80">Questions Answered</div>
-          </div>
-          <div className="card text-center">
-            <div className="text-3xl font-bold text-white mb-2">5,000+</div>
-            <div className="text-white/80">Active Users</div>
-          </div>
-        </div>
-
-        {/* Featured Quizzes */}
-        <section>
-          <h3 className="text-3xl font-bold text-white mb-8 text-center">
-            Featured Quizzes
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredQuizzes.map((quiz) => (
-              <div
-                key={quiz.id}
-                className="card hover:scale-105 transition-transform duration-200"
-              >
-                <div className="mb-4">
-                  <span className="inline-block px-3 py-1 bg-purple-500/30 text-purple-200 text-sm rounded-full mb-2">
-                    {quiz.category}
-                  </span>
-                  <h4 className="text-xl font-semibold text-white mb-2">
-                    {quiz.title}
-                  </h4>
-                  <p className="text-white/80 text-sm mb-4 line-clamp-3">
-                    {quiz.description}
-                  </p>
+          <div className="flex flex-col lg:flex-row gap-8 justify-center items-stretch max-w-4xl mx-auto">
+            <div className="flex-1">
+              <div className="card p-8 text-center group hover:scale-105 transition-all duration-300">
+                <div className="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">🚀</div>
+                <div className="text-2xl font-bold text-white mb-4">
+                  Join Quiz Room
                 </div>
-                <div className="flex justify-between items-center mb-4">
-                  <div className="flex items-center space-x-4 text-sm text-white/70">
-                    <span>
-                      ⏱️{" "}
-                      {quiz.timeLimit ? formatTime(quiz.timeLimit) : "No limit"}
-                    </span>
-                    <span>
-                      📊 {Math.floor(Math.random() * 1000) + 100} plays
-                    </span>
-                  </div>
+                <p className="text-white/70 mb-6 text-sm">
+                  Have a room code? Join an existing quiz and compete with others!
+                </p>
+                <div className="space-y-4">
+                  <input 
+                    type="text" 
+                    placeholder="Enter room code..." 
+                    onChange={(e) => setRoom(e.target.value)} 
+                    value={room}
+                    className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200 text-center font-mono text-lg tracking-widest uppercase"
+                  />
+                  <button 
+                    className="btn-secondary w-full py-4 text-lg font-semibold"
+                    disabled={!room.trim()}
+                  >
+                    🎯 Join Quiz
+                  </button>
                 </div>
-                <button
-                  onClick={() => startQuiz(quiz.id)}
-                  className="btn-primary w-full"
-                >
-                  Start Quiz
-                </button>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Categories */}
-        <section className="mt-16">
-          <h3 className="text-3xl font-bold text-white mb-8 text-center">
-            Browse by Category
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {[
-              { name: "Science", icon: "🔬", count: 120 },
-              { name: "History", icon: "📚", count: 95 },
-              { name: "Sports", icon: "⚽", count: 80 },
-              { name: "Movies", icon: "🎬", count: 150 },
-              { name: "Music", icon: "🎵", count: 70 },
-              { name: "Technology", icon: "💻", count: 110 },
-            ].map((category) => (
-              <Link
-                key={category.name}
-                to={`/category/${category.name.toLowerCase()}`}
-                className="card text-center hover:scale-105 transition-transform duration-200 cursor-pointer"
-              >
-                <div className="text-3xl mb-2">{category.icon}</div>
-                <div className="text-white font-semibold">{category.name}</div>
-                <div className="text-white/60 text-sm">
-                  {category.count} quizzes
+            </div>
+            
+            <div className="flex items-center justify-center lg:py-8">
+              <div className="w-px h-24 bg-gradient-to-b from-transparent via-white/30 to-transparent hidden lg:block"></div>
+              <div className="flex items-center justify-center lg:hidden">
+                <div className="h-px w-16 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+                <div className="text-white/60 font-bold px-6 text-lg">OR</div>
+                <div className="h-px w-16 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+              </div>
+            </div>
+            
+            <div className="flex-1">
+              <div className="card p-8 text-center group hover:scale-105 transition-all duration-300">
+                <div className="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">✨</div>
+                <div className="text-2xl font-bold text-white mb-4">
+                  Create Your Quiz
                 </div>
-              </Link>
-            ))}
+                <p className="text-white/70 mb-6 text-sm">
+                  Design custom quizzes with your own questions and share them with friends!
+                </p>
+                <Link to="/create-quiz" className="btn-primary text-lg px-8 py-4 w-full inline-block font-semibold">
+                  🎨 Start Creating
+                </Link>
+              </div>
+            </div>
           </div>
-        </section>
+        </div>
       </main>
 
       {/* Footer */}
-      <footer className="bg-black/20 mt-20">
+      <footer className="bg-black/20 mt-20 border-t border-white/20 absolute bottom-0 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-white/60">
             <p>&copy; 2025 CardQuiz. All rights reserved.</p>
