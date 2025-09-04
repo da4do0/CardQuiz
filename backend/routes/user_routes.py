@@ -36,3 +36,12 @@ def login_route():
         return jsonify({"message": message, "user_id": user.id}), 200
     else:
         return jsonify({"error": message}), 401
+
+@user_bp.route("/api/user/<int:user_id>", methods=["GET"])
+def get_user_route(user_id):
+    user, message = get_user_by_id(user_id)
+    if user:
+        user_data = {"id": user.id, "username": user.username}
+        return jsonify({"message": message, "user": user_data}), 200
+    else:
+        return jsonify({"error": message}), 404

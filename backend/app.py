@@ -1,6 +1,10 @@
 from flask import Flask
+from flask_cors import CORS
 from database import app, db
 from routes.user_routes import user_bp
+
+# Configura CORS (completamente libero)
+CORS(app)
 
 # Registra i blueprints
 app.register_blueprint(user_bp)

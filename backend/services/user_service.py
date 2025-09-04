@@ -22,7 +22,11 @@ def create_user(username, password):
 
 def get_user_by_id(user_id):
     try:
-        return User.query.get(user_id)
+        user = User.query.get(user_id)
+        if user:
+            return user, "Utente trovato"
+        else:
+            return None, "Utente non trovato"
     except Exception as e:
         return None, f"Errore nel recupero: {str(e)}"
 

@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { LoginCredentials } from '../types';
+import { authApi } from '../services/api';
+import { useAuth } from '../hooks/useAuth';
 
 const Login: React.FC = () => {
   const [credentials, setCredentials] = useState<LoginCredentials>({
-    email: '',
+    username: '',
     password: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>('');
   const navigate = useNavigate();
+
+  const { setUserId } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,12 +34,16 @@ const Login: React.FC = () => {
       console.log('Login attempt:', credentials);
       
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await authApi.login(credentials);
+      console.log('Login successful:', response);
+      if (response?.user_id) {
+        setUserId(response.user_id);
+        navigate('/');
+      }
       
       // For demo purposes, accept any credentials
-      navigate('/');
     } catch (err) {
-      setError('Invalid email or password. Please try again.');
+      setError('Invalid username or password. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -51,17 +59,17 @@ const Login: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-              Email Address
+            <label htmlFor="username" className="block text-sm font-medium text-white mb-2">
+              Username Address
             </label>
             <input
-              id="email"
-              name="email"
-              type="email"
+              id="username"
+              name="username"
+              type="username"
               required
               className="input-field"
-              placeholder="Enter your email"
-              value={credentials.email}
+              placeholder="Enter your username"
+              value={credentials.username}
               onChange={handleInputChange}
             />
           </div>

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import type { RegisterCredentials } from '../types';
+import { authApi } from '../services/api';
 
 const Register: React.FC = () => {
   const [credentials, setCredentials] = useState<RegisterCredentials>({
     username: '',
-    email: '',
     password: '',
     confirmPassword: '',
   });
@@ -38,12 +38,6 @@ const Register: React.FC = () => {
       newErrors.username = 'Username must be at least 3 characters';
     }
 
-    if (!credentials.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(credentials.email)) {
-      newErrors.email = 'Email address is invalid';
-    }
-
     if (!credentials.password.trim()) {
       newErrors.password = 'Password is required';
     } else if (credentials.password.length < 6) {
@@ -72,14 +66,19 @@ const Register: React.FC = () => {
       console.log('Registration attempt:', credentials);
       
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await authApi.register({
+        username: credentials.username,
+        password: credentials.password,
+        confirmPassword: credentials.confirmPassword,
+      });
+
+      console.log('Registration successful:', response);
       
       // For demo purposes, accept registration
       navigate('/login', { 
         state: { message: 'Registration successful! Please sign in.' }
       });
     } catch (err) {
-      setErrors({ email: 'Registration failed. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -110,25 +109,6 @@ const Register: React.FC = () => {
             />
             {errors.username && (
               <p className="mt-1 text-sm text-red-300">{errors.username}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-              Email Address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              className="input-field"
-              placeholder="Enter your email"
-              value={credentials.email}
-              onChange={handleInputChange}
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-300">{errors.email}</p>
             )}
           </div>
 
