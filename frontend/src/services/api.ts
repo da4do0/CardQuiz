@@ -6,7 +6,8 @@ import type {
   CreateQuizData,
   QuizSession,
   QuizResult,
-  UserInfoResponse
+  UserInfoResponse,
+  CreateQuizResponse
 } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -81,7 +82,6 @@ export const authApi = {
   },
 };
 
-
 //todo: definire il tipo di ritorno
 export const userApi = {
   getUserById: async (id: string): Promise<UserInfoResponse> => {
@@ -111,8 +111,8 @@ export const quizApi = {
     return apiRequest(`/quizzes/${id}`);
   },
 
-  createQuiz: async (quizData: CreateQuizData): Promise<Quiz> => {
-    return apiRequest('/quizzes', {
+  createQuiz: async (quizData: CreateQuizData): Promise<CreateQuizResponse> => {
+    return apiRequest('/quiz', {
       method: 'POST',
       body: JSON.stringify(quizData),
     });
@@ -141,6 +141,10 @@ export const quizApi = {
 
   getMyQuizzes: async (): Promise<Quiz[]> => {
     return apiRequest('/quizzes/my');
+  },
+
+  getQuizzesByUser: async (userId: number): Promise<{ quizzes: Quiz[]; message: string }> => {
+    return apiRequest(`/user/${userId}/quizzes`);
   },
 };
 

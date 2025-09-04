@@ -1,5 +1,5 @@
 export interface User {
-  id: string;
+  id: number;
   username: string;
 }
 
@@ -9,23 +9,34 @@ export interface UserInfoResponse {
 }
 
 export interface Quiz {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  questions: Question[];
-  createdBy: string;
-  createdAt: Date;
+  id: number;
+  nome: string; // Quiz name from database
+  data: Date; // Creation date from database
+  user_id: number; // Creator ID from database
+  questions?: Question[]; // Optional for quiz lists
+  category?: string; // Optional category field for UI
   timeLimit?: number; // in seconds
 }
 
+export interface CreateQuizResponse {
+  message: string;
+  quiz_id: string;
+}
+
 export interface Question {
-  id: string;
-  text: string;
-  type: 'multiple-choice' | 'true-false';
-  options: string[];
-  correctAnswer: number; // index of correct option
-  explanation?: string;
+  id: number;
+  testo: string; // Question text from database
+  risposta_1: string; // First option
+  risposta_2: string; // Second option
+  risposta_3?: string; // Third option (optional)
+  risposta_4?: string; // Fourth option (optional)
+  risposta_corretta: string; // Correct answer
+  quiz_id: number; // Quiz reference
+  
+  // Helper properties for frontend compatibility
+  text?: string; // Alias for testo
+  options?: string[]; // Computed from risposta fields
+  correctAnswer?: number; // Index of correct option
 }
 
 export interface QuizSession {
@@ -45,6 +56,14 @@ export interface Answer {
   selectedOption: number;
   isCorrect: boolean;
   timeSpent: number; // in seconds
+}
+
+// Database Risposta model interface
+export interface Risposta {
+  id: number;
+  risposta_data: string; // User's answer
+  quiz_id: number; // Quiz reference
+  user_id: number; // User who answered
 }
 
 export interface QuizResult {
@@ -75,14 +94,12 @@ export interface RegisterCredentials {
 }
 
 export interface CreateQuizData {
+  userId: number;
   title: string;
-  description: string;
-  category: string;
-  timeLimit?: number;
-  questions: Omit<Question, 'id'>[];
+  questions: Omit<Question, "id">[];
 }
 
-export type QuizDifficulty = 'easy' | 'medium' | 'hard';
+export type QuizDifficulty = "easy" | "medium" | "hard";
 
 export interface QuizFilters {
   category?: string;

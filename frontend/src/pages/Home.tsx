@@ -6,46 +6,48 @@ import { userApi } from "../services/api";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { userId } = useAuth();
+  const { userId, setUserId } = useAuth();
   const [username, setUsername] = useState<string>("");
   const [room, setRoom] = useState<string>("");
+  
+  // Simple login simulation for testing
+  const simulateLogin = (userIdToLogin: number) => {
+    setUserId(userIdToLogin);
+    navigate('/my-quizzes');
+  };
 
   // Mock data for featured quizzes
   const [featuredQuizzes] = useState<Quiz[]>([
     {
-      id: "1",
-      title: "General Knowledge Challenge",
-      description:
-        "Test your knowledge across various topics including history, science, and culture.",
+      id: 1,
+      nome: "General Knowledge Challenge",
+      user_id: 1,
+      data: new Date(),
       category: "General Knowledge",
       questions: [],
-      createdBy: "admin",
-      createdAt: new Date(),
       timeLimit: 300,
     },
     {
-      id: "2",
-      title: "Science Fundamentals",
-      description: "Explore the basics of physics, chemistry, and biology.",
+      id: 2,
+      nome: "Science Fundamentals",
+      user_id: 1,
+      data: new Date(),
       category: "Science",
       questions: [],
-      createdBy: "admin",
-      createdAt: new Date(),
       timeLimit: 600,
     },
     {
-      id: "3",
-      title: "World History Quiz",
-      description: "Journey through important historical events and figures.",
+      id: 3,
+      nome: "World History Quiz",
+      user_id: 1,
+      data: new Date(),
       category: "History",
       questions: [],
-      createdBy: "admin",
-      createdAt: new Date(),
       timeLimit: 450,
     },
   ]);
 
-  const startQuiz = (quizId: string) => {
+  const startQuiz = (quizId: number) => {
     navigate(`/quiz/${quizId}`);
   };
 
@@ -54,9 +56,9 @@ const Home: React.FC = () => {
     return `${mins} min${mins !== 1 ? "s" : ""}`;
   };
 
-  const getUserInfo = async (userId: string) => {
+  const getUserInfo = async (userId: number) => {
     console.log("User ID:", userId);
-    const response = await userApi.getUserById(userId);
+    const response = await userApi.getUserById(userId.toString());
     console.log("User Info:", response);
     if (response?.user?.username) {
       setUsername(response?.user?.username);
@@ -188,6 +190,31 @@ const Home: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+        
+        {/* Testing Section - Remove in production */}
+        <div className="mt-12 bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-6">
+          <h3 className="text-xl font-bold text-yellow-200 mb-4">🧪 Testing - Quick Login</h3>
+          <p className="text-yellow-100/80 mb-4">For testing the MyQuizzes page:</p>
+          <div className="flex gap-4">
+            <button 
+              onClick={() => simulateLogin(1)} 
+              className="btn-primary"
+            >
+              Login as User 1 (admin)
+            </button>
+            <button 
+              onClick={() => simulateLogin(2)} 
+              className="btn-secondary"
+            >
+              Login as User 2 (admin1)
+            </button>
+          </div>
+          {userId && (
+            <p className="text-yellow-100 mt-4">
+              Currently logged in as User ID: {userId} ({username})
+            </p>
+          )}
         </div>
       </main>
 

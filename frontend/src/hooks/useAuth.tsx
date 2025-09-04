@@ -2,8 +2,8 @@ import { useState, useEffect, useContext, createContext } from 'react';
 import type { ReactNode } from 'react';
 
 interface AuthContextType {
-  userId: string | null;
-  setUserId: (id: string | null) => void;
+  userId: number | null;
+  setUserId: (id: string | number | null) => void;
   isAuthenticated: boolean;
   clearAuth: () => void;
 }
@@ -15,7 +15,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [userId, setUserIdState] = useState<string | null>(null);
+  const [userId, setUserIdState] = useState<number | null>(null);
 
   const isAuthenticated = !!userId;
 
@@ -23,14 +23,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const storedUserId = localStorage.getItem('user_id');
     if (storedUserId) {
-      setUserIdState(storedUserId);
+      const numericId = parseInt(storedUserId, 10);
+      if (!isNaN(numericId)) {
+        setUserIdState(numericId);
+      }
     }
   }, []);
 
-  const setUserId = (id: string | null) => {
-    if (id) {
-      localStorage.setItem('user_id', id);
-      setUserIdState(id);
+  const setUserId = (id: string | number | null) => {
+    if (id !== null) {
+      const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+      if (!isNaN(numericId)) {
+        localStorage.setItem('user_id', numericId.toString());
+        setUserIdState(numericId);
+      }
     } else {
       localStorage.removeItem('user_id');
       setUserIdState(null);
@@ -62,7 +68,7 @@ export const useAuth = (): AuthContextType => {
 };
 
 // Helper hook for just getting user ID
-export const useUserId = (): string | null => {
+export const useUserId = (): number | null => {
   const { userId } = useAuth();
   return userId;
 };

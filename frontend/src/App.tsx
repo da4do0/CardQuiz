@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import CreateQuiz from './pages/CreateQuiz';
 import QuizGame from './pages/QuizGame';
 import QuizResults from './pages/QuizResults';
+import MyQuizzes from './pages/MyQuizzes';
 import Logout from './pages/Logout';
 import './App.css';
 
@@ -19,6 +20,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/create-quiz" element={<CreateQuiz />} />
+            <Route path="/my-quizzes" element={<MyQuizzes />} />
             <Route path="/quiz/:quizId" element={<QuizGame />} />
             <Route path="/quiz-results" element={<QuizResults />} />
             <Route path="/logout" element={<Logout />} />
