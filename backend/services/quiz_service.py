@@ -46,7 +46,20 @@ def get_quiz_by_id(quiz_id):
 def get_quizzes_by_user(user_id):
     try:
         quizzes = Quiz.query.filter_by(user_id=user_id).order_by(Quiz.data.desc()).all()
-        return quizzes, "Quizzes recuperati con successo"
+        response = []
+        
+        for quiz in quizzes:
+            count_domande = get_count_questions_in_quiz(quiz.id)
+            quiz_obj = {
+                "id": quiz.id,
+                "nome": quiz.nome,
+                "data": quiz.data,
+                "user_id": quiz.user_id,
+                "question_count": count_domande
+            }
+            response.append(quiz_obj)
+
+        return response, "Quizzes recuperati con successo"
     except Exception as e:
         return None, f"Errore nel recupero dei quiz dell'utente: {str(e)}"
 
@@ -60,3 +73,17 @@ def get_quiz_with_questions(quiz_id):
             return None, None, "Quiz non trovato"
     except Exception as e:
         return None, None, f"Errore nel recupero del quiz con domande: {str(e)}"
+
+def get_count_questions_in_quiz(quiz_id):
+    try:
+        count = Domanda.query.filter_by(quiz_id=quiz_id).count()
+        return count
+    except Exception as e:
+        return 0
+
+def get_all_quizzes():
+    try:
+        quizzes = Quiz.query.all()
+        return quizzes, "Tutti i quiz recuperati con successo"
+    except Exception as e:
+        return None, f"Errore nel recupero di tutti i quiz: {str(e)}"

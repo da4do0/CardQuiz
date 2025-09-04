@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.quiz_service import create_quiz, get_quiz_by_id, get_quizzes_by_user, get_quiz_with_questions
+from services.quiz_service import *
 
 quiz_bp = Blueprint('quizzes', __name__)
 
@@ -50,14 +50,16 @@ def get_quiz_route(quiz_id):
 @quiz_bp.route("/api/user/<int:user_id>/quizzes", methods=["GET"])
 def get_user_quizzes_route(user_id):
     quizzes, message = get_quizzes_by_user(user_id)
+    print("Quizzes fetched for user", user_id, ":", quizzes)
     if quizzes is not None:
-        quizzes_data = [{
-            "id": quiz.id,
-            "nome": quiz.nome,
-            "data": quiz.data.isoformat(),
-            "user_id": quiz.user_id
-        } for quiz in quizzes]
-        return jsonify({"message": message, "quizzes": quizzes_data}), 200
+        return jsonify({"message": message, "quizzes": quizzes}), 200
     else:
         return jsonify({"error": message}), 500
 
+@quiz_bp.route("/api/quizzez", methods=["GET"])
+def get_all_quizzes_route():
+    try:
+        quizzes, message = get_all_quizzes()
+        return jsonify({"quizzes": quizzes}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
