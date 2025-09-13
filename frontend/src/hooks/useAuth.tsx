@@ -55,7 +55,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     clearAuth,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 // Custom hook to use auth context

@@ -3,14 +3,21 @@ from flask_cors import CORS
 from database import app, db
 from routes.user_routes import user_bp
 from routes.quiz_routes import quiz_bp
+from routes.lobby_routes import lobby_bp
+from flask_socketio import SocketIO
+from websocket.socket_handlers import register_socket_events
+
 
 # Configura CORS (completamente libero)
 CORS(app)
 
+socketio = SocketIO(app, cors_allowed_origins="*")
+register_socket_events(socketio)
 
 # Registra i blueprints
 app.register_blueprint(user_bp)
 app.register_blueprint(quiz_bp)
+app.register_blueprint(lobby_bp)
 
 @app.route('/')
 def home():
@@ -44,4 +51,4 @@ if __name__ == '__main__':
         print("API Base URL: http://localhost:5000/api")
         print("=" * 40)
         
-        app.run(debug=True, host='0.0.0.0', port=5000)
+        socketio.run(app, debug=True, host='0.0.0.0', port=5000)

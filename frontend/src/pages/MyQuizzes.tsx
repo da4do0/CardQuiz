@@ -73,11 +73,9 @@ const MyQuizzes: React.FC = () => {
     }).format(date);
   };
 
-  const formatTime = (seconds?: number): string => {
-    if (!seconds) return "No limit";
-    const mins = Math.floor(seconds / 60);
-    return `${mins} min${mins !== 1 ? "s" : ""}`;
-  };
+  const createQuizLobby = async ()=>{
+    
+  }
 
   if (isLoading) {
     return (
@@ -216,8 +214,10 @@ const MyQuizzes: React.FC = () => {
                       >
                         🎮 Solo
                       </Link>
+
+                      {/* todo: crea robe */}
                       <Link
-                        to={`/quiz/${quiz.id}/lobby`}
+                        to={`/quiz/${quiz.id}`}
                         className="btn-primary flex-1 text-center text-xs"
                       >
                         👥 Lobby

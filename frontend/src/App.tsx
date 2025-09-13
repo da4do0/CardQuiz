@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './hooks';
+import { AuthProvider } from './hooks/useAuth';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -22,7 +22,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/create-quiz" element={<CreateQuiz />} />
             <Route path="/my-quizzes" element={<MyQuizzes />} />
-            <Route path="/quiz/:quizId/lobby" element={<QuizLobby />} />
+            <Route path="/quiz/:quizId" element={<QuizLobby />} />
             <Route path="/quiz/:quizId" element={<QuizGame />} />
             <Route path="/quiz-results" element={<QuizResults />} />
             <Route path="/logout" element={<Logout />} />

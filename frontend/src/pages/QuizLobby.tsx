@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { lobbyApi, handleApiError } from '../services/api';
-import type { QuizLobby, LobbyParticipant } from '../types';
+import type { QuizLobby} from '../types';
+import { useSocket } from '../hooks/useSocket';
 
 const QuizLobbyPage: React.FC = () => {
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
-  const { userId, isAuthenticated } = useAuth();
+  const { userId} = useAuth();
+  const { socket, isConnected } = useSocket();
 
   // State
   const [lobby, setLobby] = useState<QuizLobby | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isJoining, setIsJoining] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [hasJoined, setHasJoined] = useState(false);
 
   // Check if current user is the quiz admin
@@ -24,129 +23,20 @@ const QuizLobbyPage: React.FC = () => {
   const isParticipant = lobby && userId && 
     lobby.participants.some(p => p.id === userId);
 
-  // Fetch lobby information
-  const fetchLobby = async () => {
-    if (!quizId) return;
-
-    try {
-      setIsLoading(true);
-      setError(null);
-      const lobbyData = await lobbyApi.getLobby(quizId);
-      setLobby(lobbyData);
-      
-      // Check if current user is already in the lobby
-      if (userId && lobbyData.participants.some(p => p.id === userId)) {
-        setHasJoined(true);
-      }
-    } catch (err) {
-      const errorMessage = handleApiError(err);
-      setError(errorMessage);
-      console.error('Failed to fetch lobby:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Join lobby
-  const handleJoinLobby = async () => {
-    if (!quizId || !userId || isJoining || hasJoined) return;
-
-    try {
-      setIsJoining(true);
-      setError(null);
-      
-      const response = await lobbyApi.joinLobby(quizId, userId);
-      
-      if (response.success && response.lobby) {
-        setLobby(response.lobby);
-        setHasJoined(true);
-      } else {
-        setError(response.message || 'Failed to join lobby');
-      }
-    } catch (err) {
-      const errorMessage = handleApiError(err);
-      setError(errorMessage);
-      console.error('Failed to join lobby:', err);
-    } finally {
-      setIsJoining(false);
-    }
-  };
-
-  // Start quiz (admin only)
-  const handleStartQuiz = async () => {
-    if (!quizId || !userId || !isAdmin || isStarting) return;
-
-    try {
-      setIsStarting(true);
-      setError(null);
-      
-      const response = await lobbyApi.startQuiz(quizId, userId);
-      
-      if (response.success) {
-        // Navigate to quiz game
-        if (response.gameSessionId) {
-          navigate(`/quiz/${quizId}/game/${response.gameSessionId}`);
-        } else {
-          navigate(`/quiz/${quizId}/game`);
-        }
-      } else {
-        setError(response.message || 'Failed to start quiz');
-      }
-    } catch (err) {
-      const errorMessage = handleApiError(err);
-      setError(errorMessage);
-      console.error('Failed to start quiz:', err);
-    } finally {
-      setIsStarting(false);
-    }
-  };
-
-  // Poll for lobby updates
   useEffect(() => {
-    if (!quizId || !hasJoined) return;
+    if (socket && isConnected) {
+      socket.on('test_event', (data: any) => {
+        console.log("test web socket ricevuto dal server:", data);
+      });
 
-    const pollInterval = setInterval(fetchLobby, 3000);
-    return () => clearInterval(pollInterval);
-  }, [quizId, hasJoined]);
-
-  // Initial fetch
-  useEffect(() => {
-    if (quizId) {
-      fetchLobby();
+      return () => {
+        socket.off('test_event');
+        socket.off('test_response');
+      };
     }
-  }, [quizId]);
+  }, [socket, isConnected]);
 
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-  }, [isAuthenticated, navigate]);
 
-  // Auto-redirect when quiz starts (for participants)
-  useEffect(() => {
-    if (lobby?.startedAt && hasJoined && !isAdmin) {
-      navigate(`/quiz/${quizId}/game`);
-    }
-  }, [lobby?.startedAt, hasJoined, isAdmin, navigate, quizId]);
-
-  const formatTime = (date: Date): string => {
-    return new Date(date).toLocaleTimeString();
-  };
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="card text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-400 mx-auto mb-4"></div>
-            <h2 className="text-2xl font-bold text-white mb-2">Loading Lobby...</h2>
-            <p className="text-white/70">Please wait while we prepare your quiz lobby.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-4xl mx-auto">
@@ -201,7 +91,7 @@ const QuizLobbyPage: React.FC = () => {
                   Click below to join this quiz lobby and wait for the admin to start.
                 </p>
                 <button
-                  onClick={handleJoinLobby}
+                  onClick={()=> {}}
                   disabled={isJoining}
                   className="btn-primary w-full"
                 >
@@ -224,7 +114,7 @@ const QuizLobbyPage: React.FC = () => {
                   You can start the quiz when you're ready. All participants will be notified.
                 </p>
                 <button
-                  onClick={handleStartQuiz}
+                  onClick={()=> {}}
                   className="btn-primary w-full mb-3"
                 >
                   {isStarting ? (
