@@ -22,8 +22,7 @@ def get_uuid_code(quiz_id):
     return hash_object.hexdigest()[:6].upper()
 
 def create_lobby(quiz_id):
-    room = []
-
-    print(get_uuid_code(quiz_id))
-
-    return get_uuid_code(quiz_id)
+    id_lobby = get_uuid_code(quiz_id)
+    print(id_lobby)
+    active_lobbies[id_lobby] = {"quiz_id": quiz_id, "users": []}
+    return id_lobby

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import type { Quiz } from "../types";
 import { useAuth } from "../hooks/useAuth";
 import { quizApi, handleApiError } from "../services/api";
+import type {CreateLobbyResponse} from "../types/DTO/QuizReponse";
 
 const MyQuizzes: React.FC = () => {
   const navigate = useNavigate();
@@ -73,8 +74,12 @@ const MyQuizzes: React.FC = () => {
     }).format(date);
   };
 
-  const createQuizLobby = async ()=>{
-    
+  const createQuizLobby = async (QuizId: number) => {
+    const response = await quizApi.createLobby(QuizId);
+    console.log("lobby creata: ", response);
+    if (response?.lobby_code) {
+      navigate(`/quiz/${response?.lobby_code}`);
+    }
   }
 
   if (isLoading) {
@@ -216,12 +221,12 @@ const MyQuizzes: React.FC = () => {
                       </Link>
 
                       {/* todo: crea robe */}
-                      <Link
-                        to={`/quiz/${quiz.id}`}
-                        className="btn-primary flex-1 text-center text-xs"
+                      <div
+                        onClick={()=> createQuizLobby(quiz.id)}
+                        className="btn-primary flex-1 text-center text-xs pointer-events-auto"
                       >
                         👥 Lobby
-                      </Link>
+                      </div>
                       <Link
                         to={`/quiz/${quiz.id}/results`}
                         className="btn-secondary flex-1 text-center text-xs"

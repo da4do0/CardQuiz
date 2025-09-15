@@ -9,7 +9,15 @@ from websocket.socket_handlers import register_socket_events
 
 
 # Configura CORS (completamente libero)
-CORS(app)
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["http://localhost:5173"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "expose_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }
+})
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 register_socket_events(socketio)

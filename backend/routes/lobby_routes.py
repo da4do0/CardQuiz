@@ -9,4 +9,4 @@ def get_lobby_info(quiz_id):
 
 @lobby_bp.route("/api/quiz/create/<int:quiz_id>", methods=["GET"])
 def get_lobby_code(quiz_id):
-    return create_lobby(quiz_id)
+    return {'lobby_code':create_lobby(quiz_id)}

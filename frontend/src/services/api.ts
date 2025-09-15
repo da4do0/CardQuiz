@@ -12,6 +12,7 @@ import type {
   LobbyJoinResponse,
   LobbyStartResponse
 } from '../types';
+import type {CreateLobbyResponse} from '../types/DTO/QuizReponse';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -149,6 +150,10 @@ export const quizApi = {
   getQuizzesByUser: async (userId: number): Promise<{ quizzes: Quiz[]; message: string }> => {
     return apiRequest(`/user/${userId}/quizzes`);
   },
+
+  createLobby: async (quizId: number): Promise<CreateLobbyResponse> =>{
+    return apiRequest(`/quiz/create/${quizId}`);
+  }
 };
 
 // Game session API calls
