@@ -26,3 +26,19 @@ def create_lobby(quiz_id):
     print(id_lobby)
     active_lobbies[id_lobby] = {"quiz_id": quiz_id, "users": []}
     return id_lobby
+
+def join_lobby(room, username, user_id, sid):
+    if room in active_lobbies:
+        user_data = {
+            'sid': sid,
+            'username': username,
+            'user_id': user_id
+        }
+        # Controlla se l'utente non è già nella lista
+        if not any(u['user_id'] == user_id for u in active_lobbies[room]['users']):
+            active_lobbies[room]['users'].append(user_data)
+
+def get_list_players(room):
+    if active_lobbies[room]:
+        print(active_lobbies[room]['users'])
+        return active_lobbies[room]['users']

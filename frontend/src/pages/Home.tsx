@@ -13,7 +13,7 @@ const Home: React.FC = () => {
 
   const startQuiz = () => {
     console.log(room)
-    navigate(`/quiz/${room}`);
+    navigate(`/quiz/${room.toUpperCase()}`);
   };
 
   const getUserInfo = async (userId: number) => {
