@@ -4,6 +4,7 @@ import type { Quiz } from "../types";
 import { useAuth } from "../hooks/useAuth";
 import { quizApi, handleApiError } from "../services/api";
 import type {CreateLobbyResponse} from "../types/DTO/QuizReponse";
+import {useQuiz} from '../hooks/Quiz.hook';
 
 const MyQuizzes: React.FC = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const MyQuizzes: React.FC = () => {
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>("");
+  const {setIsAdmin} = useQuiz();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -78,6 +80,7 @@ const MyQuizzes: React.FC = () => {
     const response = await quizApi.createLobby(QuizId);
     console.log("lobby creata: ", response);
     if (response?.lobby_code) {
+      setIsAdmin(true);
       navigate(`/quiz/${response?.lobby_code}`);
     }
   }

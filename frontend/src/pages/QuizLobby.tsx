@@ -3,38 +3,87 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import type { QuizLobby} from '../types';
 import { useSocket } from '../hooks/useSocket';
+import  CardInformation from '../components/CardInformation';
+import {useQuiz} from '../hooks/Quiz.hook';
 
 const QuizLobbyPage: React.FC = () => {
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
-  const { userId} = useAuth();
+  const { userId, username} = useAuth();
   const { socket, isConnected } = useSocket();
+  const {isAdmin} = useQuiz();
 
   // State
   const [lobby, setLobby] = useState<QuizLobby | null>(null);
   const [isJoining, setIsJoining] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [hasJoined, setHasJoined] = useState(false);
-
-  // Check if current user is the quiz admin
-  const isAdmin = lobby && userId && lobby.adminId === userId;
+  const [testMessage, setTestMessage] = useState('');
+  const [isInRoom, setIsInRoom] = useState(false);
 
   // Check if user has already joined the lobby
   const isParticipant = lobby && userId && 
     lobby.participants.some(p => p.id === userId);
 
+  // Socket handlers
   useEffect(() => {
-    if (socket && isConnected) {
+    if (socket && isConnected && quizId) {
+      socket.emit('join_room', {
+        room_id: `quiz_${quizId}`,
+        username: username
+      });
+
+      socket.on('user_joined', (data: any) => {
+        console.log("User joined room:", data);
+        // Check if this is our own join confirmation
+        if (data.username === 'User_' + userId) {
+          setIsInRoom(true);
+          console.log("Successfully joined room!");
+        }
+      });
+
+      socket.on('user_left', (data: any) => {
+        console.log("User left room:", data);
+      });
+
+      socket.on('room_message', (data: any) => {
+        console.log("Room message received:", data);
+        alert(`Message from ${data.username}: ${data.message}`);
+      });
+
       socket.on('test_event', (data: any) => {
         console.log("test web socket ricevuto dal server:", data);
       });
 
       return () => {
+        socket.emit('leave_room', {
+          room_id: `quiz_${quizId}`,
+          username: 'User_' + userId
+        });
+        setIsInRoom(false);
+
+        socket.off('user_joined');
+        socket.off('user_left');
+        socket.off('room_message');
         socket.off('test_event');
         socket.off('test_response');
       };
     }
-  }, [socket, isConnected]);
+  }, [socket, isConnected, quizId, userId]);
+
+  // Function to send test message to room
+  const sendTestMessage = () => {
+    if (socket && testMessage.trim() && isInRoom) {
+      socket.emit('room_message', {
+        room_id: `quiz_${quizId}`,
+        message: testMessage,
+        username: 'User_' + userId
+      });
+      setTestMessage('');
+    } else if (!isInRoom) {
+      alert('Not connected to room yet!');
+    }
+  };
 
 
   return (
@@ -84,7 +133,7 @@ const QuizLobbyPage: React.FC = () => {
           <div className="space-y-6">
             {/* Join Lobby Card */}
             {!hasJoined && !isParticipant && (
-              <div className="card text-center">
+              <CardInformation>
                 <div className="text-4xl mb-4">🎯</div>
                 <h3 className="text-lg font-bold text-white mb-4">Join the Quiz</h3>
                 <p className="text-white/70 mb-6 text-sm">
@@ -104,10 +153,10 @@ const QuizLobbyPage: React.FC = () => {
                     'Join Lobby'
                   )}
                 </button>
-              </div>
+              </CardInformation>
             )}
 
-              <div className="card text-center">
+              <CardInformation>
                 <div className="text-4xl mb-4">👑</div>
                 <h3 className="text-lg font-bold text-white mb-4">Admin Controls</h3>
                 <p className="text-white/70 mb-6 text-sm">
@@ -129,11 +178,11 @@ const QuizLobbyPage: React.FC = () => {
                   <p className="text-white/60 text-xs">
                     Waiting for participants to join...
                   </p>
-              </div>
+              </CardInformation>
 
             {/* Waiting for Admin */}
             {hasJoined && !isAdmin && (
-              <div className="card text-center">
+              <CardInformation>
                 <div className="text-4xl mb-4">⏳</div>
                 <h3 className="text-lg font-bold text-white mb-4">Ready to Play!</h3>
                 <p className="text-white/70 mb-6 text-sm">
@@ -147,11 +196,42 @@ const QuizLobbyPage: React.FC = () => {
                   </div>
                   <span className="ml-2">Waiting...</span>
                 </div>
-              </div>
+              </CardInformation>
             )}
 
+            {/* Test Room Messages */}
+            <CardInformation>
+              <h3 className="text-lg font-bold text-white mb-4">🧪 Test Room Messages</h3>
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  value={testMessage}
+                  onChange={(e) => setTestMessage(e.target.value)}
+                  placeholder="Enter test message..."
+                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-purple-400"
+                  onKeyPress={(e) => e.key === 'Enter' && sendTestMessage()}
+                />
+                <button
+                  onClick={sendTestMessage}
+                  disabled={!testMessage.trim() || !isConnected || !isInRoom}
+                  className="btn-secondary w-full text-sm"
+                >
+                  Send to Room
+                </button>
+                <div className="flex items-center justify-center text-xs">
+                  <div className={`w-2 h-2 rounded-full mr-2 ${isInRoom ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                  <span className="text-white/60">
+                    {isInRoom ? 'Connected to room' : 'Connecting to room...'}
+                  </span>
+                </div>
+                <p className="text-white/60 text-xs text-center">
+                  Messages will only be sent to users in this quiz room
+                </p>
+              </div>
+            </CardInformation>
+
             {/* Quiz Info */}
-            <div className="card">
+            <CardInformation>
               <h3 className="text-lg font-bold text-white mb-4">Quiz Information</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
@@ -174,7 +254,7 @@ const QuizLobbyPage: React.FC = () => {
                   </span>
                 </div>
               </div>
-            </div>
+            </CardInformation>
           </div>
         </div>
       </div>

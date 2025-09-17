@@ -1,11 +1,13 @@
-import { useState, useEffect, useContext, createContext } from 'react';
-import type { ReactNode } from 'react';
+import { useState, useEffect, useContext, createContext } from "react";
+import type { ReactNode } from "react";
 
 interface AuthContextType {
   userId: number | null;
   setUserId: (id: string | number | null) => void;
   isAuthenticated: boolean;
   clearAuth: () => void;
+  username: string;
+  setUsername: (username: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -16,12 +18,13 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [userId, setUserIdState] = useState<number | null>(null);
+  const [username, setUsername] = useState<string>("");
 
   const isAuthenticated = !!userId;
 
   // Initialize userId from localStorage on mount
   useEffect(() => {
-    const storedUserId = localStorage.getItem('user_id');
+    const storedUserId = localStorage.getItem("user_id");
     if (storedUserId) {
       const numericId = parseInt(storedUserId, 10);
       if (!isNaN(numericId)) {
@@ -32,19 +35,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const setUserId = (id: string | number | null) => {
     if (id !== null) {
-      const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+      const numericId = typeof id === "string" ? parseInt(id, 10) : id;
       if (!isNaN(numericId)) {
-        localStorage.setItem('user_id', numericId.toString());
+        localStorage.setItem("user_id", numericId.toString());
         setUserIdState(numericId);
       }
     } else {
-      localStorage.removeItem('user_id');
+      localStorage.removeItem("user_id");
       setUserIdState(null);
     }
   };
 
   const clearAuth = () => {
-    localStorage.removeItem('user_id');
+    localStorage.removeItem("user_id");
     setUserIdState(null);
   };
 
@@ -53,20 +56,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUserId,
     isAuthenticated,
     clearAuth,
+    username,
+    setUsername,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 // Custom hook to use auth context
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

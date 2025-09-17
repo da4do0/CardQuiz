@@ -13,7 +13,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState<string>('');
   const navigate = useNavigate();
 
-  const { setUserId } = useAuth();
+  const { setUserId, setUsername } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,6 +38,7 @@ const Login: React.FC = () => {
       console.log('Login successful:', response);
       if (response?.user_id) {
         setUserId(response.user_id);
+        setUsername(credentials.username);
         navigate('/');
       }
       
